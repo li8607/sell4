@@ -6,10 +6,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.test.context.junit4.SpringRunner;
-import javax.transaction.Transactional;
-import java.util.Date;
+
+import java.util.Arrays;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -26,11 +26,14 @@ public class ProductCategoryRepositoryTest {
 
     @Test
     public void saveTest() {
-        ProductCategory productCategory = new ProductCategory();
-        productCategory.setCategoryName("sdfafd");
-        productCategory.setCategoryType(11);
-        productCategory.setCreateTime(new Date());
-        productCategory.setUpdateTime(new Date());
+        ProductCategory productCategory = new ProductCategory("女生最爱", 80);
         Assert.assertNotNull(productCategoryRepository.save(productCategory));
+    }
+
+    @Test
+    public void findByCategoryTypeInTest() {
+        List<Integer> list = Arrays.asList(91, 5, 11, 70);
+        List<ProductCategory> result = productCategoryRepository.findByCategoryTypeIn(list);
+        Assert.assertNotEquals(0, result.size());
     }
 }
