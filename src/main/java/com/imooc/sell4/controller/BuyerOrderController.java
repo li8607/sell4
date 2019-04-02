@@ -27,7 +27,11 @@ public class BuyerOrderController {
 
     @Autowired
     private OrderServiceImpl orderService;
-
+//    name:张三
+//    phone:18868822111
+//    address:慕课网总部
+//    openid:ew3euwhd7sjw9diwkq
+//    items:[{productId:"123213",productQuantity:2}]
     //创建订单
     @PostMapping("/create")
     public ResultVO<Map<String, String>> create(@Valid OrderForm orderForm,

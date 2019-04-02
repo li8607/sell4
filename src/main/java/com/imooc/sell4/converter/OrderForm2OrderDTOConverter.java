@@ -21,12 +21,12 @@ public class OrderForm2OrderDTOConverter {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setBuyerName(orderForm.getName());
         orderDTO.setBuyerPhone(orderForm.getPhone());
-        orderDTO.setBuyerAddress(orderDTO.getBuyerAddress());
+        orderDTO.setBuyerAddress(orderForm.getAddress());
         orderDTO.setBuyerOpenid(orderForm.getOpenid());
 
         List<OrderDetail> orderDetailList = new ArrayList<>();
         try {
-            gson.fromJson(orderForm.getItems()
+            orderDetailList = gson.fromJson(orderForm.getItems()
                     , new TypeToken<List<OrderDetail>>() {
                     }.getType());
         } catch (Exception e) {
