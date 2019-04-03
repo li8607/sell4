@@ -5,6 +5,7 @@ import com.imooc.sell4.dto.OrderDTO;
 import com.imooc.sell4.enums.ResultEnum;
 import com.imooc.sell4.exception.SellException;
 import com.imooc.sell4.form.OrderForm;
+import com.imooc.sell4.service.impl.BuyerServiceImpl;
 import com.imooc.sell4.service.impl.OrderServiceImpl;
 import com.imooc.sell4.utils.ResultVOUtil;
 import com.imooc.sell4.vo.ResultVO;
@@ -28,7 +29,11 @@ public class BuyerOrderController {
 
     @Autowired
     private OrderServiceImpl orderService;
-//    name:张三
+
+    @Autowired
+    private BuyerServiceImpl buyerService;
+
+    //    name:张三
 //    phone:18868822111
 //    address:慕课网总部
 //    openid:ew3euwhd7sjw9diwkq
@@ -65,18 +70,39 @@ public class BuyerOrderController {
                                    @RequestParam(value = "page", defaultValue = "0") Integer page,
                                    @RequestParam(value = "size", defaultValue = "10") Integer size) {
 
-        if(StringUtils.isEmpty(openid)) {
+        if (StringUtils.isEmpty(openid)) {
             log.error("【查询订单列表】 openid为空");
             throw new SellException(ResultEnum.PARAM_ERROR);
         }
 
         PageRequest request = new PageRequest(page, size);
-        Page<OrderDTO> orderDTOPage =  orderService.findList(openid, request);
+        Page<OrderDTO> orderDTOPage = orderService.findList(openid, request);
         return ResultVOUtil.success(orderDTOPage.getContent());
     }
 
     //订单详情
+    @GetMapping("/detail")
+    public ResultVO<OrderDTO> detail(@RequestParam(value = "openid") String openid,
+                                     @RequestParam(value = "orderId") String orderId) {
+
+        if (StringUtils.isEmpty(openid)) {
+            log.error("【查询订单详情】 openid为空");
+            throw new SellException(ResultEnum.PARAM_ERROR);
+        }
+
+        OrderDTO orderDTO = buyerService.findOrderOne(openid, orderId);
+        return ResultVOUtil.success(orderDTO);
+    }
 
     //取消订单
-
+    @PostMapping("/cancel")
+    public ResultVO cancel(@RequestParam(value = "openid") String openid,
+                           @RequestParam(value = "orderId") String orderId) {
+        if (StringUtils.isEmpty(openid)) {
+            log.error("【取消订单】 openid为空");
+            throw new SellException(ResultEnum.PARAM_ERROR);
+        }
+        buyerService.cancelOrder(openid, orderId);
+        return ResultVOUtil.success();
+    }
 }
