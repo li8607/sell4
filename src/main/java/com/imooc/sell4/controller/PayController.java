@@ -5,12 +5,15 @@ import com.imooc.sell4.enums.ResultEnum;
 import com.imooc.sell4.exception.SellException;
 import com.imooc.sell4.service.OrderService;
 import com.imooc.sell4.service.PayService;
+import com.lly835.bestpay.model.PayResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Map;
 
 @Controller
 @RequestMapping("/pay")
@@ -24,13 +27,19 @@ public class PayController {
 
     @GetMapping("/create")
     public ModelAndView create(@RequestParam(value = "orderId") String orderId,
-                               @RequestParam("returnUrl") String returnUrl) {
+                               @RequestParam("returnUrl") String returnUrl,
+                               Map<String, Object> map) {
         OrderDTO orderDTO = orderService.findOne(orderId);
         if(orderDTO == null) {
             throw new SellException(ResultEnum.ORDER_NOT_EXIST);
         }
-//        payService.create(orderDTO);
-        return new ModelAndView("pay/create");
+//        PayResponse payResponse = payService.create(orderDTO);
+        PayResponse payResponse = new PayResponse();
+        map.put("orderId", orderId);
+        map.put("payResponse", payResponse);
+        map.put("returnUrl", returnUrl);
+
+        return new ModelAndView("pay/create", map);
     }
 
 }
