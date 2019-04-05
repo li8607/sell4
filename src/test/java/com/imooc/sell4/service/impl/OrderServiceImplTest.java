@@ -39,12 +39,12 @@ public class OrderServiceImplTest {
         List<OrderDetail> orderDetailList = new ArrayList<>();
 
         OrderDetail o1 = new OrderDetail();
-        o1.setProductId("213123");
+        o1.setProductId("11111");
         o1.setProductQuantity(1);
         orderDetailList.add(o1);
 
         OrderDetail o2 = new OrderDetail();
-        o2.setProductId("234567");
+        o2.setProductId("22222");
         o2.setProductQuantity(5);
         orderDetailList.add(o2);
 
