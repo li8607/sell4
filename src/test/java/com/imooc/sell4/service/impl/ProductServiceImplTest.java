@@ -55,4 +55,16 @@ public class ProductServiceImplTest {
         List<ProductInfo> productInfoList = service.findUpAll();
         Assert.assertNotEquals(0, productInfoList.size());
     }
+
+    @Test
+    public void onSale() {
+        ProductInfo productInfo = service.onSale("11111");
+        Assert.assertEquals(ProductStatusEnum.UP, productInfo.getProductStatusEnum());
+    }
+
+    @Test
+    public void offSale() {
+        ProductInfo productInfo = service.offSale("11111");
+        Assert.assertEquals(ProductStatusEnum.DOWN, productInfo.getProductStatusEnum());
+    }
 }
