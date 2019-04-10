@@ -14,6 +14,8 @@ import com.imooc.sell4.repository.OrderDetailRepository;
 import com.imooc.sell4.repository.OrderMasterRepository;
 import com.imooc.sell4.service.OrderService;
 import com.imooc.sell4.service.ProductService;
+import com.imooc.sell4.service.PushMessageService;
+import com.imooc.sell4.service.WebSocket;
 import com.imooc.sell4.utils.KeyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -43,6 +45,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderDetailRepository orderDetailRepository;
+
+    @Autowired
+    private PushMessageService pushMessageService;
+
+    @Autowired
+    private WebSocket webSocket;
 
     @Override
     @Transient
@@ -90,6 +98,9 @@ public class OrderServiceImpl implements OrderService {
                 .map(e -> new CartDTO(e.getProductId(), e.getProductQuantity()))
                 .collect(Collectors.toList());
         productService.decreaseStock(cartDTOList);
+
+        webSocket.sendMessage(orderDTO.getOrderId());
+
         return orderDTO;
     }
 
@@ -172,6 +183,9 @@ public class OrderServiceImpl implements OrderService {
             log.error("【完结订单】 更新失败, orderMaster={}", orderMaster);
             throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
         }
+
+        pushMessageService.orderStatus(orderDTO);
+
         return orderDTO;
     }
 

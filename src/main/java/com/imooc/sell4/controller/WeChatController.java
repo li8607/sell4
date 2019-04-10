@@ -1,5 +1,6 @@
 package com.imooc.sell4.controller;
 
+import com.imooc.sell4.config.ProjectUrlConfig;
 import com.imooc.sell4.enums.ResultEnum;
 import com.imooc.sell4.exception.SellException;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +24,15 @@ public class WeChatController {
     @Autowired
     private WxMpService wxMpService;
 
+    @Autowired
+    private WxMpService wxOpenService;
+
+    @Autowired
+    private ProjectUrlConfig projectUrlConfig;
+
     @GetMapping("/authorize")
     public String authorize(@RequestParam(value = "returnUrl") String returnUrl) {
-        String url = "http://bencheng.natapp1.cc/sell/wechat/userInfo";
+        String url = projectUrlConfig.getWechatMpAuthorize() + "/sell/wechat/userInfo";
         String redirectUrl = wxMpService.oauth2buildAuthorizationUrl(url, WxConsts.OAUTH2_SCOPE_BASE, URLEncoder.encode(returnUrl));
         log.info("【微信网页授权】 获取code, result={}", redirectUrl);
         return "redirect:" + redirectUrl;
@@ -44,6 +51,29 @@ public class WeChatController {
             throw new SellException(ResultEnum.WECHAT_MP_ERROR.getCode(), e.getError().getErrorMsg());
         }
         String openId = wxMpOAuth2AccessToken.getOpenId();
+        return "redirect:" + returnUrl + "?openid=" + openId;
+    }
+
+    @GetMapping("/qrAuthorize")
+    public String qrAuthorize(@RequestParam("returnUrl") String returnUrl) {
+        String url = projectUrlConfig.getWechatOpenAuthorize() + "/sell/wechat/qrUserInfo";
+        String redirectUrl = wxOpenService.buildQrConnectUrl(url, WxConsts.QRCONNECT_SCOPE_SNSAPI_LOGIN, URLEncoder.encode(returnUrl));
+        return "redirect:" + redirectUrl;
+    }
+
+    @GetMapping("/qrUserInfo")
+    public String qrUserInfo(@RequestParam(value = "code") String code,
+                             @RequestParam(value = "state") String returnUrl) {
+        WxMpOAuth2AccessToken wxMpOAuth2AccessToken2 = new WxMpOAuth2AccessToken();
+        try {
+            wxMpOAuth2AccessToken2 = wxOpenService.oauth2getAccessToken(code);
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+            log.error("【微信网页授权】 {}", e);
+            throw new SellException(ResultEnum.WECHAT_MP_ERROR.getCode(), e.getError().getErrorMsg());
+        }
+        log.info("wxMpOAuth2AccessToken={}", wxMpOAuth2AccessToken2);
+        String openId = wxMpOAuth2AccessToken2.getOpenId();
         return "redirect:" + returnUrl + "?openid=" + openId;
     }
 
