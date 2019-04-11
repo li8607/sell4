@@ -1,7 +1,9 @@
 package com.imooc.sell4.exception;
 
 import com.imooc.sell4.enums.ResultEnum;
+import lombok.Data;
 
+@Data
 public class SellException extends RuntimeException {
 
     private Integer code;
